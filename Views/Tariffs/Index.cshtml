@@ -1,0 +1,52 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.Tariff>
+
+@{
+    ViewData["Title"] = "Тарифы";
+}
+
+<h1>Тарифы</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Partner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaficcCross)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaficcExp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Addition)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Partner.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaficcCross)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaficcExp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Addition)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> 
+                @if(ViewData[item.Id.ToString()] != null)
+                {
+                        @: | <a href=@Url.Action("Index","History", new {table="Tariff", id = item.Id})>История</a>
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

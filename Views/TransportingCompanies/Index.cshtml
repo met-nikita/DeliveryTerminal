@@ -1,0 +1,81 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.TransportingCompany>
+
+@{
+    ViewData["Title"] = "Транспортные компании";
+}
+
+<h1>Транспортные компании</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать новую</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaxID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BankName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BIK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DefaultTC)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaxID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BankName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.KS)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BIK)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DefaultTC)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Детали</a>
+                @if(!item.DefaultTC)
+                {
+                @:|
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

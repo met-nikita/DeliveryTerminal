@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Добро пожаловать!</h1>
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <a asp-area="Identity" asp-page="/Account/Login">Войдите</a>@: в аккаунт для доступа к функциям системы.
+    }
+    else
+    {
+        @:Используйте панель навигации наверху страницы для перемещения между доступными вам разделами.
+    }
+
+</div>

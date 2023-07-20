@@ -1,0 +1,291 @@
+﻿@using DeliveryTerminal.Models.Enums;
+@model DeliveryRegistrationViewModel
+@{
+    ViewData["Title"] = "Регистрация поставок";
+    int counter = 0;
+}
+@if(!String.IsNullOrEmpty(Model.Error))
+{
+    <p class="text-danger">@Model.Error</p>
+}
+else
+{
+    @switch (Model.DeliveryType)
+    {
+        case DeliveryType.CrossDock:
+            <h4 class="display-4">Кросс-докинг</h4>
+            break;
+        case DeliveryType.Expeditor:
+            <h4 class="display-4">Стандартная поставка</h4>
+            break;
+        default:
+            break;
+    }
+    <h4 class="display-4">@Model.NameS -> @Model.NameR</h4>
+    <hr />
+    <form asp-action="Register" id="RegistrationForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="IdS" />
+        <input type="hidden" asp-for="IdR" />
+        <input type="hidden" asp-for="DeliveryType" />
+    <div class="row">
+        <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="CountPallets" class="control-label"></label>
+                    <input asp-for="CountPallets" class="form-control" />
+                    <span asp-validation-for="CountPallets" class="text-danger"></span>
+                </div>
+         </div>
+         <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="PackagingLoc" class="control-label"></label>
+                    <select asp-for="PackagingLoc" class="form-control"><option value="@PackagingLoc.Warehouse">Склад</option><option value="@PackagingLoc.City">Город</option></select>
+                </div>
+             </div>
+    </div>
+        <div class="row">
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="CountBoxes" class="control-label"></label>
+                    <input asp-for="CountBoxes" class="form-control" />
+                    <span asp-validation-for="CountBoxes" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="RegionId" class="control-label"></label>
+                        <select asp-for="RegionId" class="form-control" asp-items="ViewBag.RegionId"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="CountOversized" class="control-label"></label>
+                    <input asp-for="CountOversized" class="form-control" />
+                    <span asp-validation-for="CountOversized" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="Driver" class="control-label"></label>
+                        <input asp-for="Driver" class="form-control" />
+                        <span asp-validation-for="Driver" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                @if (Model.DeliveryType == DeliveryType.CrossDock)
+                {
+                    <div class="form-group">
+                        <label asp-for="Weight" class="control-label"></label>
+                        <input asp-for="Weight" class="form-control" />
+                        <span asp-validation-for="Weight" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <input hidden asp-for="Weight" />
+                    <div class="form-group">
+                        <input type="button" value="Ввести веса" class="btn btn-primary" onclick="EnterWeights()" />
+                    </div>
+                    <div id="WeightsBlock">
+                        @if (Model.CountPallets > 0)
+                        {
+                            @for (int i = 0; i < Model.CountPallets; i++, counter++)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Вес паллеты #@(
+                        i + 1
+                        )
+                                    </label>
+                                    <input class="form-control" type="text" id="Weights_@counter
+_" name="Weights[@counter]" value="@(Model.Weights.Count > counter ? Model.Weights[counter] : "")">
+                                </div>
+                            }
+                        }
+                        @if (Model.CountBoxes > 0)
+                        {
+                            @for (int i = 0; i < Model.CountBoxes; i++, counter++)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Вес коробки #@(
+                               i + 1
+                               )
+                                    </label>
+                                    <input class="form-control" type="text" id="Weights_@counter
+_" name="Weights[@counter]" value="@(Model.Weights.Count > counter ? Model.Weights[counter] : "")">
+                                </div>
+                            }
+                        }
+                        @if (Model.CountOversized > 0)
+                        {
+                            @for (int i = 0; i < Model.CountOversized; i++, counter++)
+                            {
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Вес негабарита #@(
+                               i + 1
+                               )
+                                    </label>
+                                    <input class="form-control" type="text" id="Weights_@counter
+_" name="Weights[@counter]" value="@(Model.Weights.Count > counter ? Model.Weights[counter] : "")">
+                                </div>
+                            }
+                        }
+
+
+                    </div>
+                }
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="OwnPallets" class="control-label"></label>
+                        <input asp-for="OwnPallets" class="form-control" />
+                        <span asp-validation-for="OwnPallets" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="Notes" class="control-label"></label>
+                    <input asp-for="Notes" class="form-control" />
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+               </div>
+              </div>
+        <div class="row">
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="UPDID" class="control-label"></label>
+                    <input asp-for="UPDID" class="form-control" />
+                    <span asp-validation-for="UPDID" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="UPDDate" class="control-label"></label>
+                    <input asp-for="UPDDate" class="form-control" />
+                    <span asp-validation-for="UPDDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="form-group">
+                    <label asp-for="UPDSum" class="control-label"></label>
+                    <input asp-for="UPDSum" class="form-control" />
+                    <span asp-validation-for="UPDSum" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="ExpRequired" /> @Html.DisplayNameFor(model => model.ExpRequired)
+                    </label>
+                </div>
+                <div class="form-group">
+                    @if (Model.DeliveryType == DeliveryType.CrossDock)
+                    {
+                        <input type="button" value="Внести поставку и напечатать документы" class="btn btn-primary" onclick="SubmitForm(0)" />
+                    }
+                    else
+                    {
+                        <input type="button" value="Внести поставку и напечатать документы" class="btn btn-primary" onclick="SubmitForm(1)" />
+                    }
+                </div>
+            
+        </div>
+    </div>
+    </form>
+}
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        @if(Model.LockExpRequired)
+        {
+    @:$("#ExpRequired").prop('disabled', true);
+        }
+                var weightInputs = [];
+        function EnterWeights()
+        {
+            let pallets = $("#CountPallets").val();
+                let boxes = $("#CountBoxes").val();
+            let oversized = $("#CountOversized").val();
+                weightInputs = [];
+                $("#WeightsBlock").empty();
+                var counter = 0;
+                if(pallets>0)
+                {
+                    for (let i = 0; i < pallets; i++)
+                    {
+                        var $newdiv = $("<div class=\"form-group\"></div>");
+                        var $newlabel = $("<label class=\"control-label\"></label>").append("Вес паллеты #" + (i+1));
+                    var $newinput = $("<input class=\"form-control\" type=\"text\" id=\"Weights_" + counter + "_\" name=\"Weights[" + counter + "]\" value=\"\">");
+                        weightInputs.push($newinput);
+                        $newdiv.append($newlabel);
+                        $newdiv.append($newinput);
+                        $("#WeightsBlock").append($newdiv);
+                        counter++;
+                    }
+                }
+                if(boxes > 0)
+                {
+                    for (let i = 0; i < boxes; i++) {
+                        var $newdiv = $("<div class=\"form-group\"></div>");
+                        var $newlabel = $("<label class=\"control-label\"></label>").append("Вес коробки #" + (i + 1));
+                    var $newinput = $("<input class=\"form-control\" type=\"text\" id=\"Weights_" +counter+"_\" name=\"Weights["+counter+"]\" value=\"\">");
+                        weightInputs.push($newinput);
+                        $newdiv.append($newlabel);
+                        $newdiv.append($newinput);
+                        $("#WeightsBlock").append($newdiv);
+                        counter++;
+                    }
+                }
+                if(oversized > 0)
+                {
+                for (let i = 0; i < oversized; i++) {
+                    var $newdiv = $("<div class=\"form-group\"></div>");
+                    var $newlabel = $("<label class=\"control-label\"></label>").append("Вес негабарита #" + (i + 1));
+                    var $newinput = $("<input class=\"form-control\" type=\"text\" id=\"Weights_" + counter + "_\" name=\"Weights[" + counter + "]\" value=\"\">");
+                    weightInputs.push($newinput);
+                    $newdiv.append($newlabel);
+                    $newdiv.append($newinput);
+                    $("#WeightsBlock").append($newdiv);
+                    counter++;
+                }
+                }
+        }
+        function SubmitForm(type)
+        {
+            if(type == 1)
+            {
+                let totalWeight = 0;
+                $.each(weightInputs, function(index, value) {
+                    totalWeight = totalWeight+parseFloat(value.val());
+                })
+                $("#Weight").val(totalWeight);
+            }
+            else
+            {
+
+            }
+            var form = document.getElementById('RegistrationForm');
+            form.submit();
+        }
+    </script>
+}

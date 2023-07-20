@@ -1,0 +1,17 @@
+﻿@using DeliveryTerminal.Models.Enums;
+@{
+    ViewData["Title"] = "Сканирование QR-кода";
+}
+@if (ViewData["Error"] != null)
+{
+    <p class="text-danger">@ViewData["Error"]</p>
+}
+else
+{
+    <a href="
+                        @Url.Action("Register","DeliveryRegistration", new {Sender=ViewData["Sender"], Receiver=ViewData["Receiver"], Type=DeliveryType.CrossDock})" class="btn btn-primary" style="width:auto">Кросс-докинг</a>
+
+    <a href="
+                        @Url.Action("Register","DeliveryRegistration", new {Sender=ViewData["Sender"], Receiver=ViewData["Receiver"], Type=DeliveryType.Expeditor})" class="btn btn-primary" style="width:auto">Стандартная поставка</a>
+
+}

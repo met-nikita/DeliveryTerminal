@@ -1,0 +1,430 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.Registry>
+
+@{
+    ViewData["Title"] = "Реестр";
+}
+@using DeliveryTerminal.Models.Enums;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+<h1>Реестр поставок</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать поставку</a>
+</p>
+
+<form asp-controller="Registries" asp-action="Index" method="get" id="filtersForm">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+        Грузополучатель:
+            <select class="form-control" id="ReceiverID" name="ReceiverID" asp-items="ViewBag.ReceiverId"><option value="">Все</option></select>
+            </div>
+            <div class="col-sm">
+                Начало интервала: <input class="form-control" type="date" name="DateBegin" value="@ViewData["DateBegin"]" />
+            </div>
+            </div>
+        <div class="row">
+            <div class="col-sm">
+                Тип поставки: <select class="form-control" id="DeliveryType" name="DeliveryType">
+                    <option value="">Все</option>
+            @if (ViewBag.DeliveryType == DeliveryType.CrossDock)
+            {
+                <option value="0" selected="selected">Кросс-докинг</option>
+                <option value="1">Стандартные поставки</option>
+            }
+            else if (ViewBag.DeliveryType == DeliveryType.Expeditor)
+            {
+                <option value="0">Кросс-докинг</option>
+                <option value="1" selected="selected">Стандартные поставки</option>
+            }
+            else
+            {
+                <option value="0">Кросс-докинг</option>
+                <option value="1">Стандартные поставки</option>
+            }
+            </select>
+            </div>
+            <div class="col-sm">
+                Конец интервала: <input class="form-control" type="date" name="DateEnd" value="@ViewData["DateEnd"]" />
+            </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-auto">
+                <input type="button" id="filter" class="btn btn-primary" value="Фильтровать" />
+        </div>
+        </div>
+    </div>
+    <input hidden type="number" name="page" value="1" />
+    <input hidden type="text" id="columns" name="columns" value="" />  
+        
+    <div class="container" id="columnSelectorContainer">
+        <div class="d-none justify-content-center align-items-center" id="columnSelectorOverlay">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+        <div id="columnSelector">
+        <div class="row justify-content-center align-self-center">
+            <div class="col-auto">Выбранные столбцы:<select id="selected" class="form-control" size="10"></select></div>
+            <div class="col-auto d-flex flex-column justify-content-center">
+                <input value="↑" id="up" type="button" class="btn btn-secondary"><br>
+
+
+                <input class="btn btn-secondary" id="rshift" type="button" value="<<"><br>
+
+
+
+                <input class="btn btn-secondary" id="shift" value=">>" type="button"><br><input class="btn btn-secondary" id="down" value="↓" type="button">
+                </div><div class="col-auto">
+                    Не выбранные столбцы:<select id="unselected" class="form-control" size="10">
+                    <option value="EMPTY">ПУСТО</option>
+                    <option value="DeliveryType">Тип поставки</option>
+                    <option value="ReceiverId">Грузополучатель</option>
+                    <option value="ReceiveDate">Дата поступления</option>
+                    <option value="ReceiveTime">Время поступления</option>
+                    <option value="ReceiveDateTime">Дата+Время поступления</option>
+                    <option value="SenderId">Поставщик</option>
+                    <option value="RegionId">Регион</option>
+                    <option value="CountPallets">Количество паллет</option>
+                    <option value="CountBoxes">Количество коробок</option>
+                    <option value="CountOversized">Количество негабаритных</option>
+                    <option value="Weight">Вес</option>
+                    <option value="PackagingLoc">Место сбора</option>
+                    <option value="Driver">Водитель</option>
+                    <option value="OwnPallets">Учет паллет</option>
+                    <option value="Notes">Комментарии</option>
+                    <option value="UPDID">№ УПД</option>
+                    <option value="UPDDate">Дата УПД</option>
+                    <option value="UPDSum">Сумма УПД</option>
+                    <option value="ExpID">№ ЭР</option>
+                    <option value="ExpDate">Дата ЭР</option>
+                    <option value="Rate">Ставка</option>
+            </select></div>
+
+        </div>
+        <div class="row justify-content-center"><div class="col-auto"><input type="button" id="savefilter" class="btn btn-primary" value="Сохранить для заказчика"></div></div>
+            <div class="row justify-content-center"><div class="col-auto" id="loadingRow"></div></div>
+            <div class="row"><div class="col-sm"><input type="button" id="export" class="btn btn-primary" value="Экспорт в Excel" /></div></div>
+        </div>
+    </div>
+</form>
+<br />
+<p>Сумма УПД: <mark>@ViewBag.UPDSum</mark></p>
+<p>Сумма ставок: <mark>@ViewBag.RateSum</mark></p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiverId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiveDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiveTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SenderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountPallets)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountBoxes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountOversized)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UPDID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UPDDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UPDSum)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Receiver.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiveDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiveTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sender.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Region.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountPallets)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountBoxes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountOversized)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UPDID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UPDDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UPDSum)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Детали</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                    @if (ViewData[item.Id.ToString()] != null)
+                    {
+                        @: | <a href=@Url.Action("Index","History", new {table="Registry", id = item.Id})>История</a>
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<br />
+
+@Html.PagedListPager( (IPagedList)Model, page => Url.Action("Index", new { page, receiverID = @ViewData["ReceiverIDSelected"], dateBegin = @ViewData["DateBegin"], dateEnd = @ViewData["DateEnd"], deliveryType = @ViewData["DeliveryType"], columns = @ViewData["Columns"]}) )
+
+@section Scripts
+{
+<script>
+    var exportButton = document.getElementById('export');
+    var filterButton = document.getElementById('filter');
+    var form = document.getElementById('filtersForm');
+    function saveFilterToInput()
+    {
+            $('#columns').val('');
+            $('#selected').children('option').each(function () {
+                $('#columns').val($('#columns').val() + $(this).val() + ';');
+            });
+            $('#columns').val($('#columns').val().slice(0, -1));
+            return $('#columns').val();
+    }
+    exportButton.addEventListener("click", function () {
+        saveFilterToInput();            
+        form.action = "/Registries/ExportExcel"
+        form.submit();
+    });
+
+        filterButton.addEventListener("click", function () {
+            saveFilterToInput();
+            form.action = "/Registries/Index"
+            form.submit();
+        });
+
+    function parseColumns(columns)
+    {
+            $('#selected').children('option').each(function () {
+                if ($(this).val() == "EMPTY") {
+                    $(this).remove();
+                }
+                else {
+                    $('#unselected').append($(this));
+                }
+            });
+        if(!columns)
+        {
+            return;
+        }
+            const columnsA = columns.split(';');
+            columnsA.forEach((element) => {
+                if(element == "EMPTY")
+                {
+                    $('#selected').append($("#unselected > option[value|='EMPTY']").clone());
+                }
+                else
+                {
+                    $('#selected').append($("#unselected > option[value|='"+element+"']"));
+                }
+            });
+    }
+
+    function getSelectOption(select) {
+        var options = select.options;
+        var opt;
+
+        for (var i = 0, iLen = options.length; i < iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+                return(opt);
+            }
+        }
+        return false;
+    }
+
+    var hybridSelector = function (source, target, shift, rshift, up, down) {
+        var ddlSource = source;
+        var ddlTarget = target;
+        var btnShift = shift;
+        var btnRShift = rshift;
+        var btnUp = up;
+        var btnDown = down;
+            var shiftHandler = function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    if (selectedItem.value == 'EMPTY') {
+                        selectedItem.remove();
+                    }
+                    else {
+                        ddlTarget.appendChild(selectedItem);
+                    }
+                }
+            };
+            var rshiftHandler = function () {
+                var selectedItem = getSelectOption(target);
+
+                if (selectedItem) {
+                    if (selectedItem.value == 'EMPTY') {
+                        ddlSource.appendChild(selectedItem.cloneNode(true));
+                    }
+                    else {
+                        ddlSource.appendChild(selectedItem);
+                    }
+                }
+            }
+
+
+        btnShift.addEventListener("click", shiftHandler);
+
+        btnRShift.addEventListener("click", rshiftHandler);
+
+            ddlSource.addEventListener("dblclick", shiftHandler);
+            ddlTarget.addEventListener("dblclick", rshiftHandler);
+
+            btnUp.addEventListener("click", function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    var wrapper = $(selectedItem).closest('option')
+                    wrapper.insertBefore(wrapper.prev())
+                }
+            });
+
+            btnDown.addEventListener("click", function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    var wrapper = $(selectedItem).closest('option')
+                    wrapper.insertAfter(wrapper.next())
+                }
+            });
+
+        return ddlTarget.options;
+    };
+
+        function GetURLParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        };
+
+        parseColumns(decodeURIComponent(GetURLParameter("columns")));
+
+        $("#ReceiverID")
+            .on("change", function () {
+                let id = $("#ReceiverID option:selected").val();
+                if(id>0)
+                {
+                    $("#columnSelector").addClass("opacityblur");
+                    $("#columnSelectorOverlay").removeClass("d-none").addClass("d-flex");
+                    $("#ReceiverID").prop("disabled",true);
+                    $.get("/ColumnFilters/GetColumns", { receiverID: id})
+                        .done(function (data) {
+                            parseColumns(data);
+                            $("#columnSelector").removeClass("opacityblur");
+                            $("#columnSelectorOverlay").removeClass("d-flex").addClass("d-none");
+                            $("#ReceiverID").prop("disabled", false);
+                        }).fail(function (data) {
+                            $("#columnSelector").removeClass("opacityblur");
+                            $("#columnSelectorOverlay").removeClass("d-flex").addClass("d-none");
+                            $("#ReceiverID").prop("disabled", false);
+                        });
+                }
+            });
+
+            $("#savefilter").on("click", function () {
+            let id = $("#ReceiverID option:selected").val();
+            if(id>0)
+            {
+                let filter = saveFilterToInput();
+                $("#loadingRow").html("<div class=\"spinner-border\" role=\"status\"><span class=\"visually-hidden\">Сохранение...</span></div>");
+                $("#savefilter").prop("disabled", true);
+                $.post("/ColumnFilters/SetColumns", { receiverID: id, columns: filter })
+                    .done(function (data) {
+                        $("#loadingRow").html("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\" fill=\"green\" class=\"bi bi-check\" viewBox=\"0 0 16 16\"><path d=\"M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z\"/></svg>")
+                        setTimeout(function () { $("#savefilter").prop("disabled", false); $("#loadingRow").html("");}, 1500);
+                    }).fail(function (data) {
+                        $("#loadingRow").html("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\" fill=\"red\" class=\"bi bi-check\" viewBox=\"0 0 16 16\"><path d=\"M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z\"/></svg>")
+                        setTimeout(function () { $("#savefilter").prop("disabled", false); $("#loadingRow").html(""); }, 1500);
+                    });
+            }
+            });
+
+    var hybridSelectorInstance = new hybridSelector(document.getElementById('selected'), document.getElementById('unselected'), document.getElementById('shift'), document.getElementById('rshift'), document.getElementById('up'), document.getElementById('down'));
+</script>
+}
+
+@section Styles
+{
+    <style>
+    .opacityblur {
+        opacity: 0.6;
+        filter: blur(3px);
+        pointer-events: none;
+    }
+
+        #columnSelectorContainer {
+            position: relative;
+        }
+
+        #columnSelectorOverlay {
+            position: absolute; /* Sit on top of the page content */
+            display: none; /* Hidden by default */
+            width: 100%; /* Full width (cover the whole page) */
+            height: 100%; /* Full height (cover the whole page) */
+            top: 0;
+            left: 0;
+            z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+            cursor: pointer; /* Add a pointer on hover */
+        }
+    </style>
+
+}

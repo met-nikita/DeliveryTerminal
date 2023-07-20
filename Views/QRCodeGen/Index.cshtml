@@ -1,0 +1,29 @@
+﻿@model DeliveryTerminal.Models.QRCodeGenViewModel
+
+@{
+    ViewData["Title"] = "Генератор QR-кодов";
+}
+
+<h1>Генератор QR-кодов</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <select asp-for="Sender" asp-items="@(new SelectList(Model.Senders, nameof(Partner.Id), nameof(Partner.Name)))">
+                    <option value="">Выберите поставщика</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select asp-for="Receiver" asp-items="@(new SelectList(Model.Receivers, nameof(Partner.Id), nameof(Partner.Name)))">
+                    <option value="">Выберите грузополучателя</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Создать QR-код" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

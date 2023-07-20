@@ -1,0 +1,160 @@
+﻿@using DeliveryTerminal.Models.Enums;
+@model DeliveryTerminal.Models.Registry
+
+@{
+    ViewData["Title"] = "Детали";
+}
+
+<h1>Детали</h1>
+
+<div>
+    <h4>Поставка</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DeliveryType)
+        </dt>
+        <dd class="col-sm-10">
+            @switch (Model.DeliveryType)
+            {
+                case DeliveryType.CrossDock:
+                    @:Кросс-докинг
+                    break;
+                case DeliveryType.Expeditor:
+                    @:Стандартная поставка
+                    break;
+                default:
+                    @:Неизвестно
+                    break;
+            }
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReceiverId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Receiver.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReceiveDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReceiveDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReceiveTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReceiveTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SenderId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Sender.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RegionId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Region.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CountPallets)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CountPallets)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CountBoxes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CountBoxes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CountOversized)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CountOversized)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Weight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PackagingLoc)
+        </dt>
+        <dd class="col-sm-10">
+            @switch (Model.PackagingLoc)
+            {
+                case PackagingLoc.Warehouse:
+                    @:Склад
+                    break;
+                case PackagingLoc.City:
+                    @:Город
+                    break;
+                default:
+                    @:Неизвестно
+                    break;
+            }
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Driver)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Driver)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.OwnPallets)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OwnPallets)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UPDID)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UPDID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UPDDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UPDDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UPDSum)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UPDSum)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ExpID)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ExpID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ExpDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ExpDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Rate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Rate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>

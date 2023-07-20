@@ -1,0 +1,33 @@
+﻿@using DeliveryTerminal.Models
+@model List<DeliveryTerminal.Models.UserRolesViewModel>
+@{
+    ViewData["Title"] = "Пользователи и роли";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Пользователи и роли</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать пользователя</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Почта</th>
+            <th>Роли</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@string.Join(", ", user.Roles.ToList())</td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Управлять</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

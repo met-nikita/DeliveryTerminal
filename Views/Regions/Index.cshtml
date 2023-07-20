@@ -1,0 +1,34 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.Region>
+
+@{
+    ViewData["Title"] = "Регионы";
+}
+
+<h1>Регионы</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать новый</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

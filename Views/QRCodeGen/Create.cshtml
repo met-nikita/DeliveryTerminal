@@ -1,0 +1,33 @@
+﻿@model DeliveryTerminal.Models.QRCodeGenViewModel
+
+@{
+    ViewData["Title"] = "Генератор QR-кодов";
+}
+
+<div id="printArea">
+<h1>@Model.SenderName -> @Model.ReceiverName</h1>
+<span>
+        <svg viewBox="0 0 21 21" height="200" width="200" xmlns="http://www.w3.org/2000/svg">
+        <path style="" fill="#000000" stroke="none" d="@Model.Svg" />
+    </svg>
+    </span>
+</div>
+    <br />
+<table><tr><td><input type="button" id="print" value="Печатать" /></td><td><!--<input type="button" id="download" value="Скачать" />--></td></tr></table>
+
+
+@section Scripts
+{
+<script>
+    const printButton = document.getElementById('print');
+    printButton.addEventListener("click", function () {
+        var prtContent = document.getElementById("printArea");
+        var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+    })
+</script>
+}

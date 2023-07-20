@@ -1,0 +1,162 @@
+﻿@model DeliveryTerminal.Models.PartnerViewModel
+
+@{
+    ViewData["Title"] = "Создание";
+}
+
+<h1>Создание</h1>
+
+<h4>Контрагент</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaxID" class="control-label"></label>
+                <input asp-for="TaxID" class="form-control" />
+                <span asp-validation-for="TaxID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegID" class="control-label"></label>
+                <input asp-for="RegID" class="form-control" />
+                <span asp-validation-for="RegID" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" onchange="supplierChanged()" id="IsSupplier" asp-for="IsSupplier" /> @Html.DisplayNameFor(model => model.IsSupplier)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" onchange="customerChanged()" id="IsCustomer" asp-for="IsCustomer" /> @Html.DisplayNameFor(model => model.IsCustomer)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ContactName" class="control-label"></label>
+                <input asp-for="ContactName" class="form-control" />
+                <span asp-validation-for="ContactName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ContactPhone" class="control-label"></label>
+                <input asp-for="ContactPhone" class="form-control" />
+                <span asp-validation-for="ContactPhone" class="text-danger"></span>
+            </div>
+            <div id="CustomerBlock">
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="NeedExp" /> @Html.DisplayNameFor(model => model.NeedExp)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RegionId" class="control-label"></label>
+                    <select asp-for="RegionId" class="form-control" asp-items="ViewBag.RegionId"><option value="">Выберите регион</option></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TransportingCompanyId" class="control-label"></label>
+                    <select asp-for="TransportingCompanyId" class="form-control" asp-items="ViewBag.TransportingCompanyId"><option value="">По-умолчанию</option></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"><option value="">Выберите пользователя</option></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TaficcCross" class="control-label"></label>
+                    <input asp-for="TaficcCross" class="form-control" />
+                    <span asp-validation-for="TaficcCross" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TaficcExp" class="control-label"></label>
+                    <input asp-for="TaficcExp" class="form-control" />
+                    <span asp-validation-for="TaficcExp" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Addition" class="control-label"></label>
+                    <input asp-for="Addition" class="form-control" />
+                    <span asp-validation-for="Addition" class="text-danger"></span>
+                </div>
+            </div>
+            <div id="SupplierBlock">
+                <table>
+                    <tr>
+                        <td>
+                            Назначенные заказчики
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                            Неназначенные заказчики
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select multiple id="selected">
+
+                            </select>
+                        </td>
+                        <td>
+                            <div style="display:inline;vertical-align:top;">
+                                <input type="button" id="shift" value=">>"/> <br /><br />
+                                <input type="button" id="rshift" value="<<"/>
+                            </div>
+                        </td>
+                        <td>
+                            <select multiple id="unselected">
+                            
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            @foreach (long id in Model.AllPartnersSelection.Keys)
+            {
+                <input type="hidden" asp-for="AllPartnersSelection[id]" />
+            }
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Вернуться к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_AssignmentEditorScriptsPartial");
+    }
+    <script>
+        $("#SupplierBlock").hide();
+        $("#CustomerBlock").hide();
+        function supplierChanged() {
+            if ($('#IsSupplier').is(":checked"))
+                $("#SupplierBlock").show();
+            else
+                $("#SupplierBlock").hide();
+        }
+        function customerChanged() {
+            if ($('#IsCustomer').is(":checked"))
+                $("#CustomerBlock").show();
+            else
+                $("#CustomerBlock").hide();
+        }
+    </script>
+}

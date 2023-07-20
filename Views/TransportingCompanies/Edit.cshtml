@@ -1,0 +1,69 @@
+﻿@model DeliveryTerminal.Models.TransportingCompany
+
+@{
+    ViewData["Title"] = "Редактирование";
+}
+
+<h1>Редактирование</h1>
+
+<h4>Транспортная компания</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaxID" class="control-label"></label>
+                <input asp-for="TaxID" class="form-control" />
+                <span asp-validation-for="TaxID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegID" class="control-label"></label>
+                <input asp-for="RegID" class="form-control" />
+                <span asp-validation-for="RegID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BankName" class="control-label"></label>
+                <input asp-for="BankName" class="form-control" />
+                <span asp-validation-for="BankName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RS" class="control-label"></label>
+                <input asp-for="RS" class="form-control" />
+                <span asp-validation-for="RS" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="KS" class="control-label"></label>
+                <input asp-for="KS" class="form-control" />
+                <span asp-validation-for="KS" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BIK" class="control-label"></label>
+                <input asp-for="BIK" class="form-control" />
+                <span asp-validation-for="BIK" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DefaultTC" /> @Html.DisplayNameFor(model => model.DefaultTC)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

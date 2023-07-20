@@ -1,0 +1,61 @@
+﻿@model DeliveryTerminal.Models.HistoryViewModel
+
+@{
+    ViewData["Title"] = "История";
+}
+@if (!String.IsNullOrEmpty(Model.Error))
+{
+    <p class="text-danger">@Model.Error</p>
+}
+else
+{
+
+<h1>@Model.Table - @Model.Id</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Пользователь
+            </th>
+            <th>
+                Время
+            </th>
+            @foreach(string name in Model.Columns.Values)
+            {
+            <th>
+                @name
+            </th>
+            }
+            <th>
+                Обоснование
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.HistoryEntries)
+        {
+            <tr>
+                <td>
+                    @item.UserName
+                </td>
+                <td>
+                    @item.DateTime.ToString("dd.MM.yyyy HH:mm")
+                </td>
+                @foreach(string name in Model.Columns.Keys)
+                {
+                <td>
+                    @if(item.OldValues.ContainsKey(name))
+                    {
+                            @item.OldValues[name]@: -> @item.NewValues[name]
+                    }
+                </td>
+                }
+                <td>
+                    @item.Reason
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}

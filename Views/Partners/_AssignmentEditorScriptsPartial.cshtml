@@ -1,0 +1,92 @@
+﻿<script>
+    function decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+    const optionsIds = [
+    @foreach (long id in Model.AllPartnersSelection.Keys)
+    {
+        @id
+
+        @:,
+    }
+                ];
+    const optionsNames = [
+    @foreach (string name in Model.AllPartnersNames.Values)
+    {
+        @:"@name"
+
+        @:,
+    }
+                    ];
+    var optionsValues = [
+    @foreach (bool val in Model.AllPartnersSelection.Values)
+    {
+        @:@val.ToString().ToLower()
+
+        @:,
+    }
+                        ];
+    var optionsIns = [];
+    for (var i = 0; i < optionsIds.length; i++) {
+        optionsIns.push(new Option(decodeHtml(optionsNames[i]), decodeHtml(optionsNames[i])));
+    }
+    var hybridSelector = function (source, target, shift, rshift) {
+        var ddlSource = source;
+        var ddlTarget = target;
+        var btnShift = shift;
+        var btnRShift = rshift;
+        for (var i = 0; i < optionsIds.length; i++) {
+            if (optionsValues[i]) {
+                ddlSource.appendChild(optionsIns[i]);
+            }
+            else {
+                ddlTarget.appendChild(optionsIns[i]);
+            }
+        }
+        btnShift.addEventListener("click", function () {
+            var selectedItems = getSelectOptions(source);
+
+            if (selectedItems) {
+                for (var i = 0; i < selectedItems.length; i++) {
+                    ddlTarget.appendChild(selectedItems[i]);
+                    var index = optionsIns.indexOf(selectedItems[i]);
+                    document.getElementById("AllPartnersSelection_" + optionsIds[index] + "_").value = "False";
+                }
+            }
+        });
+
+        btnRShift.addEventListener("click", function () {
+            var selectedItems = getSelectOptions(target);
+
+            if (selectedItems) {
+                for (var i = 0; i < selectedItems.length; i++) {
+                    ddlSource.appendChild(selectedItems[i]);
+                    var index = optionsIns.indexOf(selectedItems[i]);
+                    document.getElementById("AllPartnersSelection_" + optionsIds[index] + "_").value = "True";
+                }
+            }
+        });
+
+        function getSelectOptions(select) {
+            var result = [];
+            var options = select.options;
+            var opt;
+
+            for (var i = 0, iLen = options.length; i < iLen; i++) {
+                opt = options[i];
+
+                if (opt.selected) {
+                    result.push(opt);
+                }
+            }
+            return result;
+        }
+
+        return ddlTarget.options;
+    };
+
+    var hybridSelectorInstance = new hybridSelector(document.getElementById('selected'), document.getElementById('unselected'), document.getElementById('shift'), document.getElementById('rshift'));
+
+</script>

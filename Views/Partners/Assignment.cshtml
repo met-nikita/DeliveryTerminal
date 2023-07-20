@@ -1,0 +1,56 @@
+﻿@model DeliveryTerminal.Models.PartnerAssignmentViewModel
+
+@{
+    ViewData["Title"] = "Настройка назначений";
+}
+
+<h1>Настройка назначений</h1>
+
+<h4>@Model.PartnerNameVM</h4>
+<hr />
+<form asp-action="Assignment">
+    <input type="hidden" asp-for="IdVM" />
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Грузополучатель
+            </th>
+            <th>
+                Кросс-докинг
+            </th>
+            <th>
+                Стандартная поставка
+            </th>
+                <th>
+                </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i< Model.Entries.Count;i++)
+        {
+                <input type="hidden" asp-for="Entries[i].IdVM" />
+            <tr>
+                <td>
+                        @Html.DisplayFor(modelItem => Model.Entries[i].NameVM)
+                </td>
+                <td>
+                    <input class="form-check-input" asp-for="Entries[i].CrossDock" />
+                </td>
+                <td>
+                        <input class="form-check-input" asp-for="Entries[i].Expeditor" />
+                </td>
+                    <td>
+                        <a href="
+                        @Url.Action("Create","QRCodeGen", new {Sender=Model.IdVM, Receiver=Model.Entries[i].IdAsVM})" class="btn btn-primary" style="width:auto">QR-код</a>
+                    </td>
+            </tr>
+        }
+    </tbody>
+</table>
+        <input type="submit" value="Сохранить" class="btn btn-primary" />
+</form>
+
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>

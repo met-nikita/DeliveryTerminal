@@ -1,0 +1,125 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.Partner>
+
+@{
+    ViewData["Title"] = "Контрагенты";
+}
+
+<h1>Контрагенты</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать новый</a>
+</p>
+
+<p>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-auto">
+    Тип:
+    <select class="form-control" id="type"><option value="">Все</option>
+        @if (ViewData["Selected"] != null && ViewData["Selected"].ToString() == "Supplier")
+        {
+            <option value="Supplier" selected="selected">Поставщик</option>
+            <option value="Customer">Заказчик</option>
+        }
+        else if (ViewData["Selected"] != null && ViewData["Selected"].ToString() == "Customer")
+        {
+            <option value="Supplier">Поставщик</option>
+            <option value="Customer" selected="selected">Заказчик</option>
+        }
+        else
+        {
+            <option value="Supplier">Поставщик</option>
+            <option value="Customer">Заказчик</option>
+        }
+    </select>
+            </div>
+        </div>
+    </div>
+</p>
+@if (ViewData["Selected"] != null && ViewData["Selected"].ToString() == "Supplier")
+        {
+<p>
+    <form asp-controller="Partners" asp-action="ImportSuppliers" method="post" enctype="multipart/form-data">
+        <div class="d-flex">
+            <input class="form-control" type="file" name="postedFile" />
+            <div class="float-end">
+                <input type="submit" class="btn btn-primary" value="Импортировать поставщиков" />
+            </div>
+        </div>
+    </form>
+</p>
+        }
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaxID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+             @if (ViewData["Selected"] != null && ViewData["Selected"].ToString() == "Supplier")
+        {
+            <th>
+                Назначенные заказчики
+            </th>
+        }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaxID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+                @if (ViewData["Selected"] != null && ViewData["Selected"].ToString() == "Supplier")
+                {
+                    <td>
+                        @foreach(var assignment in item.PartnersAssigned)
+                        {
+                            @assignment.AssignedPartner.Name
+                            <br />
+                        }
+                    </td>
+                }
+            <td>
+                    @if (ViewData["Selected"] == null || ViewData["Selected"].ToString() == "Supplier")
+                    {
+                <a asp-action="Assignment" asp-route-id="@item.Id">Назначения</a>@: |
+                    }
+                <a asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Детали</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <script>
+        $("#type")
+            .on("change", function () {
+                let id = $("#type option:selected").val();
+                window.location = "/Partners/?type="+id
+            });
+    </script>
+}

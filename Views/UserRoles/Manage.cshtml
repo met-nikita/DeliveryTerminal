@@ -1,0 +1,44 @@
+﻿@model ManageUserRolesViewModel
+@{
+    ViewData["Title"] = "Управление пользователем";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form method="post">
+    <div class="card">
+        <div class="card-header">
+            <h2>Управление пользователем</h2>
+            Изменение пользователя / @ViewBag.UserName.
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">Пароль (оставьте пустым, если не меняете)</label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            @for (int i = 0; i < Model.Roles.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model.Roles[i].RoleId" />
+                    <input type="hidden" asp-for="@Model.Roles[i].RoleName" />
+                    <input asp-for="@Model.Roles[i].Selected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@Model.Roles[i].Selected">
+                        @Model.Roles[i].RoleName
+                    </label>
+                </div>
+            }
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        @Html.AntiForgeryToken()
+        <div class="card-footer">
+            <input type="submit" value="Обновить" class="btn btn-primary"
+                   style="width:auto" />
+            <a asp-action="Index"
+               class="btn btn-primary" style="width:auto">Отмена</a>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Регистрация поставок";
+}
+
+<div class="text-center">
+    <div id="TaxIDBlock">
+    <h1 class="display-4">Введите ИНН:</h1>
+    <p><input type="text" id="TaxID" asp-for="@ViewData["TaxID"]"/></p>
+        <p><input id="continue" type="button" value="Продолжить" class="btn btn-primary" onclick="CheckTaxID()" /></p>
+    </div>
+    <div id="ReceiversBlock">
+
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        @if(ViewData["TaxID"] != null)
+        {
+            @:CheckTaxID();
+        }
+        function CheckTaxID() {
+            var url = '/DeliveryRegistration/GetReceivers';
+            var taxID = document.getElementById("TaxID").value;
+                $("#ReceiversBlock").html("<div class=\"spinner-border\" role=\"status\"><span class=\"visually-hidden\">Загрузка...</span></div>");
+                $("#continue").prop("disabled", true);
+            $.get(url, { TaxID: taxID }, function (result) {
+                $("#ReceiversBlock").html(result);
+                    $("#continue").prop("disabled", false);
+            });
+        }
+
+        var keyBuffer = [];
+        var qrListen = false;
+        function press(event)
+        {
+            const keyName = event.key;
+            if(event.which == 126 && qrListen==false)
+            {
+                qrListen = true;
+                return;
+            }
+            if (event.which == 126 && qrListen == true)
+            {
+                qrListen = false;
+                sendQR(keyBuffer.join(""));
+
+                return;
+            }
+            var number = event.which - 48;
+            if(!qrListen || (number<0 || number > 9))
+            {
+                keyBuffer = [];
+                qrListen = false;
+                return;
+            }
+            else
+            {
+                keyBuffer.push(number);
+            }
+        }
+        $(document).on("keypress", press);
+        function sendQR(code)
+        {
+            window.location.replace("/DeliveryRegistration/CodeParse?AssignmentID="+code);
+        }
+    </script>
+}

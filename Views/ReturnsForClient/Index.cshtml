@@ -1,0 +1,317 @@
+﻿@model IEnumerable<DeliveryTerminal.Models.Return>
+@using DeliveryTerminal.Models.Enums;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using DeliveryTerminal.Models;
+@{
+    ViewData["Title"] = "Возвраты (клиент)";
+}
+
+<h1>Возвраты (клиент)</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" style="width:auto">Создать новый</a>
+</p>
+
+<form asp-controller="Returns" asp-action="Index" method="get" id="filtersForm">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                Клиент:
+                <select id="ClientID" class="form-control" name="ClientID" asp-items="ViewBag.ClientId"><option value="">Все мои</option></select>
+            </div>
+            <div class="col-sm">
+                Начало интервала отправки: <input class="form-control" type="date" name="DateBegin" value="@ViewData["DateBegin"]" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                Состояние: <select class="form-control" id="ReturnStatus" name="ReturnStatus">
+                    <option value="">Все</option>
+                    @if (ViewBag.ReturnStatus == ReturnStatus.Sent)
+                    {
+                        <option value="0" selected="selected">Отправлено</option>
+                        <option value="1">Прибыло на терминал</option>
+                        <option value="2">Получено поставщиком</option>
+                    }
+                    else if (ViewBag.ReturnStatus == ReturnStatus.Received)
+                    {
+                        <option value="0">Отправлено</option>
+                        <option value="1" selected="selected">Прибыло на терминал</option>
+                        <option value="2">Получено поставщиком</option>
+                    }
+                    else if (ViewBag.ReturnStatus == ReturnStatus.Returned)
+                    {
+                        <option value="0">Отправлено</option>
+                        <option value="1">Прибыло на терминал</option>
+                        <option value="2" selected="selected">Получено поставщиком</option>
+                    }
+                    else
+                    {
+                        <option value="0">Отправлено</option>
+                        <option value="1">Прибыло на терминал</option>
+                        <option value="2">Получено поставщиком</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm">
+                Конец интервала отправки: <input class="form-control" type="date" name="DateEnd" value="@ViewData["DateEnd"]" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-auto">
+                <input type="button" id="filter" class="btn btn-primary" value="Фильтровать" />
+            </div>
+        </div>
+    </div>
+    <input hidden type="number" name="page" value="1" />
+    <input hidden type="text" id="columns" name="columns" value="" />
+
+    <div class="container">
+        <div id="columnSelector">
+            <div class="row justify-content-center align-self-center">
+                <div class="col-auto">
+                    Выбранные столбцы:<select id="selected" class="form-control" size="10">
+                        <option value="ClientId">Клиент</option>
+                        <option value="SupplierId">Поставщик</option>
+                        <option value="SendDate">Дата отправки</option>
+                        <option value="Count">Количество мест</option>
+                        <option value="Notes">Комментарии</option>
+                        <option value="ReceiveDate">Дата поступления на терминал</option>
+                        <option value="ReturnDate">Дата передачи товара представителю</option>
+                        <option value="RepName">ФИО представителя</option>
+                    </select>
+                </div>
+                <div class="col-auto d-flex flex-column justify-content-center">
+                    <input value="↑" id="up" type="button" class="btn btn-secondary"><br>
+
+
+                    <input class="btn btn-secondary" id="rshift" type="button" value="<<"><br>
+
+
+
+                    <input class="btn btn-secondary" id="shift" value=">>" type="button"><br><input class="btn btn-secondary" id="down" value="↓" type="button">
+                </div><div class="col-auto">
+                    Не выбранные столбцы:<select id="unselected" class="form-control" size="10">
+                        <option value="EMPTY">ПУСТО</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="row"><div class="col-sm"><input type="button" id="export" class="btn btn-primary" value="Экспорт в Excel" /></div></div>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupplierId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SendDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Count)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiveDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RepName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Supplier.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SendDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Count)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiveDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReturnDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RepName)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Детали</a>
+                    @if (ViewData[item.Id.ToString()] != null)
+                    {
+                        @: |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.PagedListPager( (IPagedList)Model, page => Url.Action("Index", new { page,clientID = @ViewData["ClientIDSelected"], dateBegin = @ViewData["DateBegin"], dateEnd = @ViewData["DateEnd"], returnStatus = @ViewData["ReturnStatus"]}) )
+@section Scripts
+    {
+    <script>
+        var exportButton = document.getElementById('export');
+        var filterButton = document.getElementById('filter');
+        var form = document.getElementById('filtersForm');
+        function saveFilterToInput() {
+            $('#columns').val('');
+            $('#selected').children('option').each(function () {
+                $('#columns').val($('#columns').val() + $(this).val() + ';');
+            });
+            $('#columns').val($('#columns').val().slice(0, -1));
+            return $('#columns').val();
+        }
+        exportButton.addEventListener("click", function () {
+            saveFilterToInput();
+            form.action = "/ReturnsForClient/ExportExcel"
+            form.submit();
+        });
+
+        filterButton.addEventListener("click", function () {
+            saveFilterToInput();
+            form.action = "/ReturnsForClient/Index"
+            form.submit();
+        });
+
+        function getSelectOption(select) {
+            var options = select.options;
+            var opt;
+
+            for (var i = 0, iLen = options.length; i < iLen; i++) {
+                opt = options[i];
+
+                if (opt.selected) {
+                    return (opt);
+                }
+            }
+            return false;
+        }
+
+        function parseColumns(columns) {
+            if (columns == "undefined") {
+                return;
+            }
+            $('#selected').children('option').each(function () {
+                if ($(this).val() == "EMPTY") {
+                    $(this).remove();
+                }
+                else {
+                    $('#unselected').append($(this));
+                }
+            });
+
+            const columnsA = columns.split(';');
+            columnsA.forEach((element) => {
+                if (element == "EMPTY") {
+                    $('#selected').append($("#unselected > option[value|='EMPTY']").clone());
+                }
+                else {
+                    $('#selected').append($("#unselected > option[value|='" + element + "']"));
+                }
+            });
+        }
+
+        function GetURLParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        };
+
+        parseColumns(decodeURIComponent(GetURLParameter("columns")));
+
+        var hybridSelector = function (source, target, shift, rshift, up, down) {
+            var ddlSource = source;
+            var ddlTarget = target;
+            var btnShift = shift;
+            var btnRShift = rshift;
+            var btnUp = up;
+            var btnDown = down;
+            var shiftHandler = function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    if (selectedItem.value == 'EMPTY') {
+                        selectedItem.remove();
+                    }
+                    else {
+                        ddlTarget.appendChild(selectedItem);
+                    }
+                }
+            };
+            var rshiftHandler = function () {
+                var selectedItem = getSelectOption(target);
+
+                if (selectedItem) {
+                    if (selectedItem.value == 'EMPTY') {
+                        ddlSource.appendChild(selectedItem.cloneNode(true));
+                    }
+                    else {
+                        ddlSource.appendChild(selectedItem);
+                    }
+                }
+            }
+
+
+            btnShift.addEventListener("click", shiftHandler);
+
+            btnRShift.addEventListener("click", rshiftHandler);
+
+            ddlSource.addEventListener("dblclick", shiftHandler);
+            ddlTarget.addEventListener("dblclick", rshiftHandler);
+
+            btnUp.addEventListener("click", function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    var wrapper = $(selectedItem).closest('option')
+                    wrapper.insertBefore(wrapper.prev())
+                }
+            });
+
+            btnDown.addEventListener("click", function () {
+                var selectedItem = getSelectOption(source);
+
+                if (selectedItem) {
+                    var wrapper = $(selectedItem).closest('option')
+                    wrapper.insertAfter(wrapper.next())
+                }
+            });
+
+            return ddlTarget.options;
+        };
+
+        var hybridSelectorInstance = new hybridSelector(document.getElementById('selected'), document.getElementById('unselected'), document.getElementById('shift'), document.getElementById('rshift'), document.getElementById('up'), document.getElementById('down'));
+    </script>
+}

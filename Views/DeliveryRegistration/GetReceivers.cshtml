@@ -1,0 +1,42 @@
+﻿@using DeliveryTerminal.Models.Enums;
+@model DeliveryRegistrationReceiverSelectViewModel
+@if (!String.IsNullOrEmpty(Model.Error))
+{
+    <p class="text-danger">@Model.Error</p>
+}
+else
+{
+    <h4 class="display-4">@Model.NameS</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Грузополучатель
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.AssignedPartnersNames)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Value.Name)
+                    </td>
+                    <td>
+                        @if(item.Value.CrossDock)
+                        {
+                            <a href="
+                        @Url.Action("Register","DeliveryRegistration", new {Sender=Model.IdS, Receiver=item.Key, Type=DeliveryType.CrossDock})" class="btn btn-primary" style="width:auto">Кросс-докинг</a>
+                        }
+                        @if (item.Value.Expeditor)
+                        {
+                            <a href="
+                        @Url.Action("Register","DeliveryRegistration", new {Sender=Model.IdS, Receiver=item.Key, Type=DeliveryType.Expeditor})" class="btn btn-primary" style="width:auto">Стандартная поставка</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

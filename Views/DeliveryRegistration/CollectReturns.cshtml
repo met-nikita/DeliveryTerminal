@@ -1,0 +1,55 @@
+﻿@model ReturnAcceptViewModel
+<h4 class="display-4">Заберите возвраты для @ViewBag.SupplierName</h4>
+@if (Model.CanSkip.HasValue && (bool)Model.CanSkip)
+{
+    <p>
+        <a asp-action="SkipReturns" asp-route-id="@Model.SupplierId" class="btn btn-danger" style="width:auto">Пропустить на этот раз</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Клиент
+            </th>
+            <th>
+                Количество мест
+            </th>
+            <th>
+                Комментарии
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Returns)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Count)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row justify-content-md-center">
+    <div class="col-md-4">
+        <form asp-action="CollectReturns">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SupplierId" />
+            <div class="form-group">
+                <label asp-for="RepName" class="control-label"></label>
+                <input asp-for="RepName" class="form-control" />
+                <span asp-validation-for="RepName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Получить возвраты" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

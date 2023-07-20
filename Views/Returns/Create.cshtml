@@ -1,0 +1,66 @@
+﻿@model DeliveryTerminal.Models.Return
+
+@{
+    ViewData["Title"] = "Создание";
+}
+
+<h1>Создание</h1>
+
+<h4>Возврат</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SupplierId" class="control-label"></label>
+                <select asp-for="SupplierId" class ="form-control" asp-items="ViewBag.SupplierId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SendDate" class="control-label"></label>
+                <input asp-for="SendDate" class="form-control" />
+                <span asp-validation-for="SendDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Count" class="control-label"></label>
+                <input asp-for="Count" class="form-control" />
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label"></label>
+                <input asp-for="Notes" class="form-control" />
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiveDate" class="control-label"></label>
+                <input asp-for="ReceiveDate" class="form-control" />
+                <span asp-validation-for="ReceiveDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReturnDate" class="control-label"></label>
+                <input asp-for="ReturnDate" class="form-control" />
+                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RepName" class="control-label"></label>
+                <input asp-for="RepName" class="form-control" />
+                <span asp-validation-for="RepName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

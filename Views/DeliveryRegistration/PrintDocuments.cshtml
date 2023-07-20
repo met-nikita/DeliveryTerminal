@@ -1,0 +1,372 @@
+﻿@using DeliveryTerminal.Models.Enums;
+@model PrintDocumentsViewModel
+@{
+    ViewData["Title"] = "Печать документов";
+}
+<div class="dontprint">
+    <a href="
+                        @Url.Action("Index","DeliveryRegistration")" class="btn btn-danger" style="width:auto">Закончить работу</a>
+    <a href="
+                        @Url.Action("Index","DeliveryRegistration", new {TaxID=Model.Registry.Sender.TaxID})" class="btn btn-success" style="width:auto">Зарегистрировать еще поставку</a>
+    <input type="button" class="btn btn-primary" value ="Печатать еще раз" onclick="printAll()" />
+</div>
+@if (!String.IsNullOrEmpty(Model.Registry.ExpID))
+{
+    <div class="dontprint printable">
+        <table class="table table-bordered table-fixed expeditor">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-1"></th>
+                    <th scope="col" class="col-1"></th>
+                    <th scope="col" class="col-1"></th>
+                    <th scope="col" class="col-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4" class="text-center">ЭР №@Model.Registry.ExpID от @Model.Registry.ExpDate.GetValueOrDefault().ToString("dd.MM.yyyy")</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <p class="fw-bold">@Model.TransportingCompany.Name</p>
+                        <p>Транспортная компания</p>
+                    </td>
+                    <td colspan="2" class="text-center">
+                        <p>ИНН: @Model.TransportingCompany.TaxID</p>
+                        <p>ОГРНИП: @Model.TransportingCompany.RegID</p>
+                        <p>@Model.TransportingCompany.BankName</p>
+                        <p>Р/С @Model.TransportingCompany.RS</p>
+                        <p>К/С @Model.TransportingCompany.KS</p>
+                        <p>БИК @Model.TransportingCompany.BIK</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">Терминал</td>
+                    <td class="text-center">г. Балашиха</td>
+                    <td class="text-center fw-bold">Дата заказа</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td colspan ="2" class="text-center fw-bold">Грузоотправитель:</td>
+                    <td colspan ="2" class="text-center fw-bold">Грузополучатель:</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Наименование</td>
+                    <td class="text-center">@Model.Registry.Sender.Name</td>
+                    <td class="text-center">Наименование</td>
+                    <td class="text-center">@Model.Registry.Receiver.Name</td>
+                </tr>
+                <tr>
+                    <td class="text-center">ИНН</td>
+                    <td class="text-center">@Model.Registry.Sender.TaxID</td>
+                    <td class="text-center">ИНН</td>
+                    <td class="text-center">@Model.Registry.Receiver.TaxID</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Юр. Адрес</td>
+                    <td class="text-center">@Model.Registry.Sender.Address</td>
+                    <td class="text-center">Юр. Адрес</td>
+                    <td class="text-center">@Model.Registry.Receiver.Address</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Контактное лицо</td>
+                    <td class="text-center">@Model.Registry.Sender.ContactName</td>
+                    <td class="text-center">Контактное лицо</td>
+                    <td class="text-center">@Model.Registry.Receiver.ContactName</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Телефон</td>
+                    <td class="text-center">@Model.Registry.Sender.ContactPhone</td>
+                    <td class="text-center">Телефон</td>
+                    <td class="text-center">@Model.Registry.Receiver.ContactPhone</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center fw-bold">Вид доставки:</td>
+                    <td colspan="2" class="text-center fw-bold">Адрес доставки:</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">До склада заказчика</td>
+                    <td colspan="2" class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">Вид груза</td>
+                    <td class="text-center fw-bold">Тип упаковки</td>
+                    <td class="text-center fw-bold">Вес груза (кг.)</td>
+                    <td class="text-center fw-bold">Объём (м3)</td>
+                </tr>
+                <tr>
+                    <td rowspan="3" class="text-center">Автозапчасти</td>
+                    <td class="text-center">@Model.PackageName</td>
+                    <td class="text-center">@Model.Registry.Weight</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">Количество мест</td>
+                    <td class="text-center fw-bold">Состояние груза</td>
+                    <td class="text-center fw-bold">Страхование</td>
+                </tr>
+                <tr>
+                    <td class="text-center">@Model.PackageSlots</td>
+                    <td class="text-center">Без проверки</td>
+                    <td class="text-center">Нет</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-center fw-bold">Дополнительные пометки</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-center">
+                        @if (!String.IsNullOrEmpty(Model.Registry.Notes))
+                        {
+                            @Model.Registry.Notes
+                        }
+                        else
+                        {
+                            <br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center fw-bold">Груз сдал</td>
+                    <td colspan="2" class="text-center fw-bold">Груз получил, претензий не имею</td>
+                </tr>
+                <tr>
+                    <td class="text-center">ФИО</td>
+                    <td class="text-center">@Model.Registry.Driver</td>
+                    <td class="text-center">ФИО</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">Подпись</td>
+                    <td class="text-center"></td>
+                    <td class="text-center">Подпись</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">Дата</td>
+                    <td class="text-center">@Model.Registry.ReceiveDate.ToString("dd.MM.yyyy") @Model.Registry.ReceiveTime.ToString("HH:mm")</td>
+                    <td class="text-center">Дата</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">МП</td>
+                    <td class="text-center"></td>
+                    <td class="text-center">МП</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center fw-bold">Груз на терминале принял</td>
+                    <td colspan="2" rowspan="5" class="text-center fw-bold"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">ФИО</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">Подпись</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">Дата</td>
+                    <td class="text-center">@Model.Registry.ReceiveDate.ToString("dd.MM.yyyy") @Model.Registry.ReceiveTime.ToString("HH:mm")</td>
+                </tr>
+                <tr>
+                    <td class="text-center">МП</td>
+                    <td class="text-center"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+@if (Model.Registry.DeliveryType == DeliveryType.Expeditor || (Model.Registry.DeliveryType == DeliveryType.CrossDock && !String.IsNullOrEmpty(Model.Registry.ExpID)))
+{
+    <div class="dontprint printable">
+        @for(int i = 0; i < Model.Entries.Count; i++)
+        {
+        <table class="table table-bordered table-fixed">
+            <tbody>
+                <tr>
+                    <td class="text-center fw-bold">Поставщик</td>
+                    <td class="text-center">@Model.Registry.Sender.Name</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">@Model.Entries[i].Name</td>
+                </tr>
+                <tr>
+                        <td colspan="2" class="text-center">@Model.Entries[i].Text</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Вес, кг</td>
+                    <td class="text-center">
+                            @Model.Entries[i].Weight
+                        </td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">Грузополучатель</td>
+                    <td class="text-center">@Model.Registry.Receiver.Name</td>
+                </tr>
+            </tbody>
+            </table>
+            @if (i < Model.Entries.Count - 1)
+            {
+                <div class="pagebreak"> </div>
+            }
+        }
+    </div>
+}
+@if (Model.Registry.DeliveryType == DeliveryType.CrossDock)
+{
+    <div class="dontprint printable printtypesticker">
+        @for (int i = 0; i < Model.Entries.Count; i++)
+        {
+            <table class="table table-borderless table-fixed sticker">
+                <tbody>
+                    <tr>
+                        <td class="text-center fw-bold">@Model.Registry.Receiver.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">Поставщик:</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">@Model.Registry.Sender.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">Регион поставки:</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">@Model.Registry.Region.Name</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">@Model.Entries[i].Name</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">@Model.Entries[i].Text</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">@Model.Registry.ReceiveDate.ToString("dd.MM.yyyy") @Model.Registry.ReceiveTime.ToString("HH:mm")</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagebreak"> </div>
+        }
+        <table class="table table-borderless table-fixed sticker">
+            <tbody>
+                <tr>
+                    <td class="text-center">Грузополучатель:</td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">@Model.Registry.Receiver.Name</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Поставщик:</td>
+                </tr>
+                <tr>
+                    <td class="text-center fw-bold">@Model.Registry.Sender.Name</td>
+                </tr>
+                <tr>
+                    <td class="text-center">Документы на поставку от:</td>
+                </tr>
+                <tr>
+                    <td class="text-center">@Model.Registry.ReceiveDate.ToString("dd.MM.yyyy")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        class SingletonStyle {
+            constructor() {
+                this.style = document.createElement("style");
+                document.head.appendChild(this.style);
+            }
+
+            apply(rule) {
+                this.style.innerHTML = rule;
+            }
+
+            size(size) {
+                this.apply("@@page {size: " + size + "}");
+            }
+
+            size(size, margin) {
+                this.apply("@@page {size: " + size + "; margin: "+margin+";}");
+            }
+        }
+        const style = new SingletonStyle();
+
+        function printAll()
+        {
+        $(".printable").each(function(){setTimeout(function(){
+            $(this).removeClass("dontprint");
+            if($(this).hasClass("printtypesticker"))
+            {
+                style.size("5cm 5cm","0mm 0mm 0mm 0mm");
+            }
+            else
+            {
+                style.size("a4");
+            }
+            window.print();
+            $(this).addClass("dontprint");}.bind(this),500);
+        })
+        }
+        printAll();
+    </script>
+}
+
+@section Styles
+{
+    <style type="text/css" media="all">
+        .table > :not(caption) > * > * {
+            padding: 0.3rem 0.5rem;
+        }
+        p {
+            margin-bottom: 0rem;
+        }
+
+        .expeditor > :not(caption) > * > th {
+            padding: 0rem 0rem;
+        }
+
+        .expeditor > :not(caption) > * > td {
+            border-width: 2px;
+            border-color: black;
+        }
+
+    </style>
+    <style type="text/css" media="print">
+        .navbar, .footer, .dontprint {
+            display: none;
+        }
+
+        .pagebreak {
+            page-break-before: always;
+        }
+
+        .sticker
+        {
+            width: 5cm;
+            height: 4.5cm;
+        }
+
+        .expeditor
+        {
+            width: 210mm;
+            height: 297mm;
+        }
+
+        .sticker > :not(caption) > * > * {
+            padding: 0.0rem 0.0rem;
+        }
+
+        .expeditor > thead > th {
+            padding: 0rem 0rem;
+        }
+
+        .expeditor > thead > td {
+            border: 5px;
+        }
+    </style>
+}

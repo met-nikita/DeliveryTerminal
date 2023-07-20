@@ -1,0 +1,51 @@
+﻿@model DeliveryTerminal.Models.TariffViewModel
+
+@{
+    ViewData["Title"] = "Редактирование";
+}
+
+<h1>Редактирование</h1>
+
+<h4>Тариф</h4>
+<hr />
+<h5>@Html.DisplayFor(model => model.PartnerNameVM)</h5>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdVM" />
+            <div class="form-group">
+                <label asp-for="TaficcCross" class="control-label"></label>
+                <input asp-for="TaficcCross" class="form-control" />
+                <span asp-validation-for="TaficcCross" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaficcExp" class="control-label"></label>
+                <input asp-for="TaficcExp" class="form-control" />
+                <span asp-validation-for="TaficcExp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Addition" class="control-label"></label>
+                <input asp-for="Addition" class="form-control" />
+                <span asp-validation-for="Addition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EditReason" class="control-label"></label>
+                <input asp-for="EditReason" class="form-control" />
+                <span asp-validation-for="EditReason" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Назад к списку</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
